@@ -307,3 +307,254 @@ check the endpoints -> kubectl get endpoints jenkins-service --namespace jenkins
 NAME              ENDPOINTS         AGE
 jenkins-service   10.244.0.5:8080   30s
 Done
+
+
+Question 7: The Nautilus DevOps teams is planning to set up a Grafana tool to collect and analyze analytics from some applications. They are planning to deploy it on Kubernetes cluster. Below you can find more details.
+
+1.) Create a deployment named grafana-deployment-datacenter using any grafana image for Grafana app. Set other parameters as per your choice.
+2.) Create NodePort type service with nodePort 32000 to expose the app.
+
+Solution: 
+Create the deployment file with the below content
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: grafana-deployment-datacente
+  labels:
+    app: grafana
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: grafana
+  template:
+    metadata:
+      labels:
+        app: grafana
+    spec:
+      containers:
+      - name: grafana-container
+        image: grafana/grafana
+        ports:
+        - containerPort: 3000
+
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: grafana-deployment-svc
+spec:
+  type: NodePort
+  selector:
+    app: grafana
+  ports:
+    - port: 3000
+      nodePort: 32000
+
+run -> kubectl create -f deployment.yaml
+Check if the pods are registerd as endpoints with the svc -> kubectl get endpoints grafana-deployment-svc
+Click on the icon and you can see the login page of Grafana.
+Done!
+
+Question 8: A new java-based application is ready to be deployed on a Kubernetes cluster. The development team had a meeting with the DevOps team to share the requirements and application scope. The team is ready to setup an application stack for it under their existing cluster. Below you can find the details for this:
+
+1. Create a namespace named tomcat-namespace-nautilus.
+2. Create a deployment for tomcat app which should be named as tomcat-deployment-nautilus under the same namespace you created. Replica count should be 1, the container should be named as tomcat-container-nautilus, its image should be gcr.io/kodekloud/centos-ssh-enabled:tomcat and its container port should be 8080.
+3. Create a service for tomcat app which should be named as tomcat-service-nautilus under the same namespace you created. Service type should be NodePort and nodePort should be 32227.
+
+Solution: 
+Create the namespace -> kubectl create namespace tomcat-namespace-nautilus
+Check namespace is active -> kubectl get namespace | grep tomcat-namespace-nautilus
+Create the deployment file.
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tomcat-deployment-nautilus
+  namespace: tomcat-namespace-nautilus
+  labels:
+    app: tomcat
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: tomcat
+  template:
+    metadata:
+      labels:
+        app: tomcat
+    spec:
+      containers:
+      - name: tomcat-container-nautilus
+        image: gcr.io/kodekloud/centos-ssh-enabled:tomcat
+        ports:
+        - containerPort: 8080
+
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: tomcat-service-nautilus
+  namespace: tomcat-namespace-nautilus
+spec:
+  type: NodePort
+  selector:
+    app: tomcat
+  ports:
+    - port: 8080
+      nodePort: 32227
+
+run -> kubectl create -f deployment.yaml
+Check every resource is created -> kubectl get all --namespace tomcat-namespace-nautilus
+Check the service endpoints -> kubectl get endpoints --namespace tomcat-namespace-nautilus
+Everything is correct. You can access the application 
+Done!
+
+Question 9: The Nautilus development team has completed development of one of the node applications, which they are planning to deploy on a Kubernetes cluster. They recently had a meeting with the DevOps team to share their requirements. Based on that, the DevOps team has listed out the exact requirements to deploy the app. Find below more details:
+
+1. Create a deployment using gcr.io/kodekloud/centos-ssh-enabled:node image, replica count must be 2.
+2. Create a service to expose this app, the service type must be NodePort, targetPort must be 8080 and nodePort should be 30012.
+3. Make sure all the pods are in Running state after the deployment.
+4. You can check the application by clicking on NodeApp button on top bar.
+
+Solution:
+Create the deployment.yaml file
+thor@jumphost ~$ cat deployments.yaml 
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nodeapp-deployment
+  labels:
+    app: nodeapp
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: nodeapp
+  template:
+    metadata:
+      labels:
+        app: nodeapp
+    spec:
+      containers:
+      - name: nodeapp-container
+        image: gcr.io/kodekloud/centos-ssh-enabled:node
+        ports:
+        - containerPort: 8080
+
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nodeapp-service
+spec:
+  type: NodePort
+  selector:
+    app: nodeapp
+  ports:
+    - port: 8080
+      nodePort: 30012
+
+run -> kubectl create -f deployment.yaml
+make sure all the resources are running -> kubectl get all
+check the service endpoints -> kubectl get endpoints nodeapp-service
+If everything is correct you can access the nodeapp and see the UI.
+Done
+
+Question 10: Last week, the Nautilus DevOps team deployed a redis app on Kubernetes cluster, which was working fine so far. This morning one of the team members was making some changes in this existing setup, but he made some mistakes and the app went down. We need to fix this as soon as possible. Please take a look.
+
+The deployment name is redis-deployment. The pods are not in running state right now, so please look into the issue and fix the same.
+
+Solution:
+1. Checked the pod logs 
+kubectl logs redis-deployment-54cdf4f76d-mm869
+Error from server (BadRequest): container "redis-container" in pod "redis-deployment-54cdf4f76d-mm869" is waiting to start: ContainerCreating
+2. Checked the deployment yaml file found out that the image name is not correct
+spec:
+      containers:
+      - image: redis:alpin
+3. Updated the image name from redis-alpin to redis-alpine
+4. Also saw that the config map name was not correctly set update the configmap name under volumes in the deployment.
+5. Checked the deployment and pod are in healthy state.
+kubectl get all
+NAME                                    READY   STATUS        RESTARTS   AGE
+pod/redis-deployment-54f7cf4df7-9jv8m   0/1     Terminating   0          5m41s
+pod/redis-deployment-7c8d4f6ddf-svb9w   1/1     Running       0          23s
+
+NAME                 TYPE        CLUSTER-IP   EXTERNAL-IP   PORT(S)   AGE
+service/kubernetes   ClusterIP   10.96.0.1    <none>        443/TCP   16m
+
+NAME                               READY   UP-TO-DATE   AVAILABLE   AGE
+deployment.apps/redis-deployment   1/1     1            1           9m17s
+
+NAME                                          DESIRED   CURRENT   READY   AGE
+replicaset.apps/redis-deployment-54cdf4f76d   0         0         0       9m17s
+replicaset.apps/redis-deployment-54f7cf4df7   0         0         0       5m41s
+replicaset.apps/redis-deployment-7c8d4f6ddf   1         1         1       23s
+
+Troubleshooting Done!
+
+Question 11: One of the DevOps team member was trying to install a WordPress website on a LAMP stack which is essentially deployed on Kubernetes cluster. It was working well and we could see the installation page a few hours ago. However something is messed up with the stack now due to a website went down. Please look into the issue and fix it:
+
+FYI, deployment name is lamp-wp and its using a service named lamp-service. The Apache is using http default port and nodeport is 30008. From the application logs it has been identified that application is facing some issues while connecting to the database in addition to other issues. Additionally, there are some environment variables associated with the pods like MYSQL_ROOT_PASSWORD, MYSQL_DATABASE,  MYSQL_USER, MYSQL_PASSWORD, MYSQL_HOST.
+
+Solution:
+1. I checked all the resources status using kubectl get all
+2. I checked the deployment yaml using kubectl get deployment lamp-wp -o yaml
+3. I Checked the service deployment using kubectl get svc lamp-service -o yaml
+First issue found out
+Node port service is using 30009 port but it should use 30008 port as per the case
+After changing that. Lamp service was able to connect to the MySQL service but still application was not able to connect to the database
+Second issue found out
+After checking the logs of the lamp application i found out the env variables are not set correctly. Below are the steps which i followed to resolve this
+1. Checked the pod logs -> kubectl logs lamp-wp-56c7c454fc-9lrwl
+Logs showed -> [10-Feb-2026 08:09:08] WARNING: [pool www] child 224 said into stderr: "NOTICE: PHP message: PHP Warning:  mysqli_connect(): (HY000/2005): Unknown MySQL server host 'mysql' (-2) in /app/index.php on line 8"
+[Tue Feb 10 08:09:08.959260 2026] [proxy_fcgi:error] [pid 123:tid 140040222137008] [client 10.244.0.1:65260] AH01071: Got error 'PHP message: PHP Notice:  Undefined index: MYSQL_PASSWORDS in /app/index.php on line 4\nPHP message: PHP Notice:  Undefined index: HOST_MYQSL in /app/index.php on line 5\nPHP message: PHP Warning:  mysqli_connect(): (HY000/2005): Unknown MySQL server host 'mysql' (-2) in /app/index.php on line 8\n', referer: https://2gqxr4b5vx5v6cf7.labs.kodekloud.com/
+
+If you see the values are not getting populated because of wrong config under /app/index.php
+2. I connected to the shell session of the container using -> kubectl exec lamp-wp-56c7c454fc-9lrwl -c httpd-php-container -i -t -- bash
+3. Checked the config -> cat /app/index.php
+This is the config before change
+bash-4.3# cat /app/index.php 
+<?php
+$dbname = $_ENV['MYSQL_DATABASE'];
+$dbuser = $_ENV['MYSQL_USER'];
+$dbpass = $_ENV['MYSQL_PASSWORDS'];
+$dbhost = $_ENV['HOST_MYQSL'];
+
+
+$connect = mysqli_connect($dbhost, $dbuser, $dbpass) or die("Unable to Connect to '$dbhost'");
+
+$test_query = "SHOW TABLES FROM $dbname";
+$result = mysqli_query($test_query);
+
+if ($result->connect_error) {
+   die("Connection failed: " . $conn->connect_error);
+}
+
+4. Edited the conf.
+cat /app/index.php
+<?php
+$dbname = $_ENV['MYSQL_DATABASE'];
+$dbuser = $_ENV['MYSQL_USER'];
+$dbpass = $_ENV['MYSQL_PASSWORD'];
+$dbhost = $_ENV['MYSQL_HOST'];
+
+
+$connect = mysqli_connect($dbhost, $dbuser, $dbpass) or die("Unable to Connect to '$dbhost'");
+
+$test_query = "SHOW TABLES FROM $dbname";
+$result = mysqli_query($test_query);
+
+if ($result->connect_error) {
+   die("Connection failed: " . $conn->connect_error);
+}
+  echo "Connected successfully";bash-4.3# 
+5. After saving the config LAMP application had connectivity. Nodeport service was able to access the clusterip service as they were in the same namespace.
+Troubleshooting done.
