@@ -88,12 +88,10 @@ A lightweight monitoring agent built for Linux systems.
 
 -   Kubernetes
 -   Docker
--   AWS
 -   Linux
 -   Python
 -   Shell scripting
 -   Git
--   CI/CD pipelines
 -   YAML
 -   Infrastructure configuration
 
