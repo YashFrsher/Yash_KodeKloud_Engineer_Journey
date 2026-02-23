@@ -1,15 +1,9 @@
 # 🚀 Terraform Kubernetes WebApp Deployment
 
-```{=html}
-<p align="center">
-```
-`<img src="https://img.shields.io/badge/Terraform-IaC-purple?style=for-the-badge&logo=terraform">`{=html}
-`<img src="https://img.shields.io/badge/Kubernetes-Orchestration-blue?style=for-the-badge&logo=kubernetes">`{=html}
-`<img src="https://img.shields.io/badge/NodePort-Service-green?style=for-the-badge">`{=html}
-`<img src="https://img.shields.io/badge/Replicas-4-orange?style=for-the-badge">`{=html}
-```{=html}
-</p>
-```
+![Terraform](https://img.shields.io/badge/Terraform-IaC-purple?style=flat&logo=terraform)
+![Kubernetes](https://img.shields.io/badge/Kubernetes-Orchestration-blue?style=flat&logo=kubernetes)
+![Service](https://img.shields.io/badge/NodePort-Service-green?style=flat)
+![Replicas](https://img.shields.io/badge/Replicas-4-orange?style=flat)
 
 ------------------------------------------------------------------------
 
@@ -21,28 +15,22 @@ to Kubernetes using **Terraform Infrastructure as Code (IaC)**.
 ### 🔹 What This Project Includes
 
 -   Kubernetes Deployment (4 replicas)
--   ReplicaSet managed by Deployment
+-   ReplicaSet managed automatically
 -   NodePort Service exposure
 -   Dynamic label & selector referencing
 -   End-to-end Terraform workflow validation
 
-📂 Full Terraform configuration can be found in the `.tf` files in this
-repository.
+📂 Full Terraform configuration is available in the `.tf` files inside
+this repository.
 
 ------------------------------------------------------------------------
 
 # 🏗 Architecture
 
-> Make sure to keep your `architecture.png` file in the root of this
-> repository.
+> Keep `architecture.png` in the root of this repository.
 
-```{=html}
-<p align="center">
-```
-`<img src="./architecture.png" width="750">`{=html}
-```{=html}
-</p>
-```
+![Architecture Diagram](./architecture.png)
+
 ### 🔎 Architecture Flow
 
 Terraform → Kubernetes Provider → Deployment → ReplicaSet → Pods (4
@@ -70,7 +58,7 @@ NodePort Service mapping port `8080` to `node_port = 30080`.
 
 Used Terraform resource reference:
 
-kubernetes_deployment.frontend.spec\[0\].template\[0\].metadata\[0\].labels.name
+`kubernetes_deployment.frontend.spec[0].template[0].metadata[0].labels.name`
 
 ------------------------------------------------------------------------
 
@@ -78,17 +66,21 @@ kubernetes_deployment.frontend.spec\[0\].template\[0\].metadata\[0\].labels.name
 
 ## 🔹 Terraform Workflow
 
-terraform init\
-terraform validate\
-terraform plan\
+``` bash
+terraform init
+terraform validate
+terraform plan
 terraform apply
+```
 
 ## 🔹 Kubernetes Verification
 
-kubectl get deployments\
-kubectl get pods\
-kubectl get svc\
+``` bash
+kubectl get deployments
+kubectl get pods
+kubectl get svc
 kubectl describe svc webapp-service
+```
 
 ✔ Verified 4 running pods\
 ✔ Verified Service selector matches Pod labels\
@@ -110,6 +102,9 @@ kubectl describe svc webapp-service
   Used `containerPort`          Terraform requires snake_case
                                 (`container_port`).
 
+  Deprecated deployment         Should migrate to
+  resource                      `kubernetes_deployment_v1`.
+
   Used `nodePort`               Must use `node_port` in Terraform syntax.
 
   No endpoints registered       Service selector must match Pod template
@@ -123,7 +118,7 @@ kubectl describe svc webapp-service
 -   Terraform HCL differs from Kubernetes YAML
 -   Services select Pods, not Deployments
 -   Label consistency is critical
--   Provider validation helps catch schema issues early
+-   Provider validation catches schema issues early
 -   Debugging requires both Terraform and kubectl
 
 ------------------------------------------------------------------------
@@ -138,11 +133,4 @@ kubectl describe svc webapp-service
 
 ------------------------------------------------------------------------
 
-```{=html}
-<p align="center">
-```
-`<b>`{=html}Infrastructure as Code • Kubernetes • DevOps
-Practice`</b>`{=html}
-```{=html}
-</p>
-```
+**Infrastructure as Code • Kubernetes • DevOps Practice**
