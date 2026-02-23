@@ -27,9 +27,7 @@ this repository.
 
 # 🏗 Architecture
 
-> Keep `architecture.png` in the root of this repository.
-
-![Architecture Diagram](./architecture.png)
+> Please refer the image provided in the root to know about the complete flow.
 
 ### 🔎 Architecture Flow
 
