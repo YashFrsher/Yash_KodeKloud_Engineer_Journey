@@ -94,6 +94,7 @@ A lightweight monitoring agent built for Linux systems.
 -   Git
 -   YAML
 -   Infrastructure configuration
+-   Terraform
 
 ------------------------------------------------------------------------
 
