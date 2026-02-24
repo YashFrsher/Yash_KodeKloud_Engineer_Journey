@@ -188,17 +188,6 @@ To destroy all resources:
 
 ------------------------------------------------------------------------
 
-## 📌 Future Enhancements
-
--   Replace deprecated links with network-based service discovery
--   Add container health checks
--   Add Nginx reverse proxy
--   Implement resource limits (CPU/memory)
--   Convert into Terraform modules
--   Integrate CI/CD pipeline
-
-------------------------------------------------------------------------
-
 ### Author
 
 Deployed and managed using Terraform & Docker for infrastructure
